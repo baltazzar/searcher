@@ -1,4 +1,4 @@
-searcher
+SEARCHER
 ========
 
-Módulo front-end de busca de dados.
+> Módulo front-end de busca de dados.

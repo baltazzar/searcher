@@ -2,8 +2,10 @@ define(function(require, exports, module){
 
 	var Marionette = require('marionette');
 
+	require(['../templates']);
+
 	module.exports = Marionette.ItemView.extend({
-		template: 'grid/search.tpl',
+		template: 'searcher/searcher.tpl',
 
 		events: {
 			'submit .form-search'  : 'doSearch',

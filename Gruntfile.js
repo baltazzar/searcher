@@ -17,15 +17,15 @@ module.exports = function(grunt) {
 				namespace: 'Handlebars.templates',
 				processName: function(filePath) {
 					filePath = filePath.split('templates/');
-					return 'auth/' + filePath[1];
+					return 'searcher/' + filePath[1];
 				},
 				processPartialName: function(filePath) {
 					filePath = filePath.split('templates/');
-					return 'auth/' + filePath[1];
+					return 'searcher/' + filePath[1];
 				}
 			},
 			searcher: {
-				src: ['src/templates/search.tpl'],
+				src: ['src/templates/searcher.tpl'],
 				dest: 'src/templates.js'
 			}
 		},

@@ -46,7 +46,7 @@ define(function(require, exports, module){
 		resetCollection: function(ev) {
 			ev.preventDefault();
 
-			var	queryObj = _.pick(this.collection.queryObj, 'itens_per_page'),
+			var	queryObj = _.omit(this.collection.queryObj, 'filter_fields'),
 				that = this;
 
 			if(ev.currentTarget.value == '') {

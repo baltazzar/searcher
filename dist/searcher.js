@@ -1,6 +1,6 @@
 /**
  * Baltazzar Searcher
- * Versão: 0.1.0
+ * Versão: 0.1.1
  * Módulo front-end de busca de dados.
  * Autor: Victor Bastos
  */
@@ -83,7 +83,7 @@ define('views/searcher',['require','exports','module','marionette'],function(req
 		resetCollection: function(ev) {
 			ev.preventDefault();
 
-			var	queryObj = _.pick(this.collection.queryObj, 'itens_per_page'),
+			var	queryObj = _.omit(this.collection.queryObj, 'filter_fields'),
 				that = this;
 
 			if(ev.currentTarget.value == '') {

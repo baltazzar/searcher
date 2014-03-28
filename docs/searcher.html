@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>searcher.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>searcher.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> $ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'jquery'</span>),
+	_ = <span class="hljs-built_in">require</span>(<span class="hljs-string">'underscore'</span>),
+	Backbone = <span class="hljs-built_in">require</span>(<span class="hljs-string">'backbone'</span>);
+
+Backbone.$ = $;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Define o template do Searcher</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> searcherTemplate = [
+	<span class="hljs-string">'&lt;div class="row"&gt;'</span>,
+	<span class="hljs-string">'	&lt;div class="col-md-2" style="margin-right:-15px;"&gt;'</span>,
+	<span class="hljs-string">'		&lt;select class="form-control input-sm search-attrs"&gt;&lt;/select&gt;'</span>,
+	<span class="hljs-string">'	&lt;/div&gt;'</span>,
+	<span class="hljs-string">'	&lt;div class="col-md-4"&gt;'</span>,
+	<span class="hljs-string">'		&lt;form class="form-search" action=""&gt;'</span>,
+	<span class="hljs-string">'			&lt;div class="input-group input-group-sm"&gt;'</span>,
+	<span class="hljs-string">'				&lt;input type="text" class="form-control search-param" placeholder="Digite sua busca"&gt;'</span>,
+	<span class="hljs-string">'				&lt;span class="input-group-btn"&gt;'</span>,
+	<span class="hljs-string">'					&lt;button type="submit" class="btn btn-primary btn-search"&gt;&lt;i class="glyphicon glyphicon-search"&gt;&lt;/i&gt;&lt;/button&gt;'</span>,
+	<span class="hljs-string">'				&lt;/span&gt;'</span>,
+	<span class="hljs-string">'			&lt;/div&gt;'</span>,
+	<span class="hljs-string">'		&lt;/form&gt;'</span>,
+	<span class="hljs-string">'	&lt;/div&gt;'</span>,
+	<span class="hljs-string">'&lt;/div&gt;'</span>
+].join(<span class="hljs-string">''</span>);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p>Retorna uma Backbone View</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>module.exports = Backbone.View.extend({
+	template: searcherTemplate,</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Define os eventos dos elementos do Searcher.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	events: {
+		<span class="hljs-string">'submit .form-search'</span>: <span class="hljs-string">'doSearch'</span>,
+		<span class="hljs-string">'keyup .search-param'</span>  : _.debounce(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> {</span>
+			<span class="hljs-keyword">if</span>(ev.currentTarget.value !== <span class="hljs-string">''</span> &amp;&amp; <span class="hljs-keyword">this</span>.options.live) {
+				<span class="hljs-keyword">this</span>.doSearch(ev);
+			} <span class="hljs-keyword">else</span> {
+				<span class="hljs-keyword">this</span>.resetCollection(ev);
+			}
+		}, <span class="hljs-number">700</span>),
+		<span class="hljs-string">'change .search-attrs'</span> : <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span> <span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.search-param'</span>).focus(); }
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p>Chama a renderização da view e prepara a collection para permitir buscas.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	initialize: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(options)</span> {</span>
+		<span class="hljs-keyword">this</span>.options = options;
+		<span class="hljs-keyword">this</span>.collection = <span class="hljs-keyword">this</span>.options.collection;
+		<span class="hljs-keyword">this</span>.prepareCollection();
+		<span class="hljs-keyword">this</span>.render();
+		<span class="hljs-keyword">this</span>.setSearcherAttrs();
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p>Renderiza a view.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	render: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+		<span class="hljs-keyword">this</span>.$el.html(<span class="hljs-keyword">this</span>.template);
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p>Prepara a collection para permitir buscas.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	prepareCollection: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+		<span class="hljs-keyword">var</span> that = <span class="hljs-keyword">this</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p>Cria o atributo queryObj na collection caso não exista.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span>(!<span class="hljs-keyword">this</span>.collection.queryObj) {
+			<span class="hljs-keyword">this</span>.collection.queryObj = {};
+		}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p>Cria a função callFetch na collection caso não exista.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>		<span class="hljs-keyword">if</span>(!<span class="hljs-keyword">this</span>.collection.callFetch) {
+			<span class="hljs-keyword">this</span>.collection.callFetch = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(data)</span> {</span>
+
+				<span class="hljs-keyword">if</span>(data &amp;&amp; data.itens_per_page) {
+					that.collection.queryObj = _.extend({page: <span class="hljs-number">1</span>}, data);
+				}
+
+				that.collection.queryObj = _.extend(that.collection.queryObj, data);
+
+				<span class="hljs-keyword">return</span> that.collection.fetch({
+					data: that.collection.queryObj
+				});
+			};
+		}
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p>Define os atributos de busca.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	setSearcherAttrs: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+		<span class="hljs-keyword">var</span> cmbSearchOptions = <span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.search-attrs'</span>);
+
+		_.each(<span class="hljs-keyword">this</span>.options.searchAttrs, <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(sa)</span> {</span>
+			sa = sa.split(<span class="hljs-string">':'</span>);
+			cmbSearchOptions.append(<span class="hljs-string">'&lt;option value="'</span> + sa[<span class="hljs-number">0</span>] + <span class="hljs-string">'"&gt;Buscar por '</span> + sa[<span class="hljs-number">1</span>] + <span class="hljs-string">'&lt;/option&gt;'</span>);
+		});
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p>Define o texto a ser exibido no botão enquanto a busca é efetuada.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	setSearchingText: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(reset)</span> {</span>
+		<span class="hljs-keyword">var</span> searchingText = <span class="hljs-keyword">this</span>.options.searchingText ? <span class="hljs-keyword">this</span>.options.searchingText : <span class="hljs-string">'Buscando...'</span>;
+
+		<span class="hljs-keyword">if</span>(reset) {
+			<span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.btn-search'</span>).html(<span class="hljs-keyword">this</span>.prevState);
+		} <span class="hljs-keyword">else</span> {
+			<span class="hljs-keyword">this</span>.prevState = <span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.btn-search'</span>).html();
+			<span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.btn-search'</span>).html(searchingText);
+		}
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p>Realiza a busca de acordo com os parâmetros escolhidos.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	doSearch: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> {</span>
+		ev.preventDefault();
+
+		<span class="hljs-keyword">var</span> searchAttr = <span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.search-attrs'</span>).val(),
+			searchParam = <span class="hljs-keyword">this</span>.$(<span class="hljs-string">'.search-param'</span>).val(),
+			query = {filter_fields: searchAttr + <span class="hljs-string">'%'</span> + searchParam},
+			that = <span class="hljs-keyword">this</span>;
+
+		<span class="hljs-keyword">if</span>(searchParam !== <span class="hljs-string">''</span>) {
+			<span class="hljs-keyword">this</span>.setSearchingText();
+			that.collection.callFetch(query).success(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+				setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+					that.setSearchingText(<span class="hljs-string">'reset'</span>);
+				}, <span class="hljs-number">500</span>);
+			});
+		}
+	},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p>Retorna a collection a seu estado inicial quando os parâmetros de busca são limpados.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	resetCollection: <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(ev)</span> {</span>
+		ev.preventDefault();
+
+		<span class="hljs-keyword">var</span> queryObj = {
+			itens_per_page: <span class="hljs-keyword">this</span>.collection.itens_per_page ? <span class="hljs-keyword">this</span>.collection.itens_per_page : <span class="hljs-number">10</span>,
+			page: <span class="hljs-number">1</span>
+		},
+		that = <span class="hljs-keyword">this</span>;
+
+		<span class="hljs-keyword">if</span>(ev.currentTarget.value === <span class="hljs-string">''</span>) {
+			<span class="hljs-keyword">this</span>.setSearchingText();
+			that.collection.fetch({
+				async: <span class="hljs-literal">false</span>,
+				data: queryObj
+			}).success(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+				setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+					that.setSearchingText(<span class="hljs-string">'reset'</span>);
+				}, <span class="hljs-number">500</span>);
+			});
+		}
+	}
+});</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

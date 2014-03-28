@@ -1,0 +1,86 @@
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8">
+		<title>Component Test</title>
+		<link href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
+		<script src="../src/libs/jquery.js"></script>
+		<script src="../src/libs/underscore.js"></script>
+		<script src="../src/libs/backbone.js"></script>
+		<script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+		<style>
+			body {
+				background: #f5f5f5;
+			}
+			table {
+				font-size: 12px;
+				background: #ffffff;
+			}
+			table th {
+				text-align: center;
+			}
+			table th:first-child {
+				width: 50px;
+			}
+			table th:last-child {
+				width: 100px;
+			}
+			table td:first-child, table td:last-child {
+				text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<h2 class="text-info">Searcher</h2>
+
+			<div id="searcher"></div>
+			<table class="table table-bordered table-condensed table-hover">
+				<thead>
+					<th>ID</th>
+					<th>NOME</th>
+					<th>CPF</th>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+
+		<script src="../dist/searcher.js"></script>
+		<script type="text/javascript">
+
+			var Searcher = baltazzar.searcher;
+
+			var Pessoas = Backbone.Collection.extend({
+				url: 'http://sistemas.sorocaba.sp.gov.br/agia/cors/api/paciente?page=1',
+				initialize: function() {
+					this.fetch({async: false});
+				},
+				parse: function(res) {
+					return res.data.itemList;
+				}
+			});
+
+			var pessoas = new Pessoas();
+
+			var renderPessoas = function() {
+				$('table tbody').empty();
+				_.each(pessoas.toJSON(), function(p) {
+					$('table tbody')
+						.append('<tr><td>'+p.id+'</td><td>'+p.nome+'</td><td>'+p.cpf+'</td></tr>');
+				});
+			};
+
+			renderPessoas();
+
+			pessoas.on('all', _.debounce(this.renderPessoas, 300));
+
+			var searcher = new Searcher({
+				el: '#searcher',
+				collection: pessoas,
+				searchAttrs: ['nome:Nome', 'cpf:CPF'],
+				live: false
+			});
+
+			console.log(searcher);
+		</script>
+	</body>
+</html>

@@ -1,138 +1,157 @@
 /**
  * Baltazzar Searcher
- * Versão: 0.1.1
- * Módulo front-end de busca de dados.
- * Autor: Victor Bastos
+ * Versão: 0.2.0
+ * Módulo para busca de registros.
+ * Autor: BaltazZar Team
  */
-this["Handlebars"] = this["Handlebars"] || {};
-this["Handlebars"]["templates"] = this["Handlebars"]["templates"] || {};
 
-this["Handlebars"]["templates"]["searcher/searcher.tpl"] = Handlebars.template(function (Handlebars,depth0,helpers,partials,data) {
-  this.compilerInfo = [4,'>= 1.0.0'];
-helpers = this.merge(helpers, Handlebars.helpers); data = data || {};
-  var buffer = "", stack1, functionType="function", escapeExpression=this.escapeExpression, self=this;
+!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),(f.baltazzar||(f.baltazzar={})).searcher=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
+var $ = _dereq_('jquery'),
+	_ = _dereq_('underscore'),
+	Backbone = _dereq_('backbone');
 
-function program1(depth0,data) {
-  
-  var buffer = "", stack1;
-  buffer += "\r\n			<option value=\"";
-  if (stack1 = helpers.attr) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.attr); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "\">Buscar por ";
-  if (stack1 = helpers.title) { stack1 = stack1.call(depth0, {hash:{},data:data}); }
-  else { stack1 = (depth0 && depth0.title); stack1 = typeof stack1 === functionType ? stack1.call(depth0, {hash:{},data:data}) : stack1; }
-  buffer += escapeExpression(stack1)
-    + "</option>\r\n		";
-  return buffer;
-  }
+Backbone.$ = $;
 
-  buffer += "<div class=\"row\">\r\n	<div class=\"col-md-2\">\r\n		<select class=\"form-control input-sm search-attrs\">\r\n		";
-  stack1 = helpers.each.call(depth0, (depth0 && depth0.searchAttrs), {hash:{},inverse:self.noop,fn:self.program(1, program1, data),data:data});
-  if(stack1 || stack1 === 0) { buffer += stack1; }
-  buffer += "\r\n		</select>\r\n	</div>\r\n	<div class=\"col-md-4\">\r\n		<form class=\"form-search\" action=\"\">\r\n			<div class=\"input-group\">\r\n				<input type=\"text\" class=\"form-control input-sm search-param\" placeholder=\"Digite sua busca\">\r\n				<span class=\"input-group-btn\">\r\n					<button class=\"btn btn-sm btn-primary btn-search\"><i class=\"glyphicon glyphicon-search\"></i></button>\r\n				</span>\r\n			</div>\r\n		</form>\r\n	</div>\r\n</div>";
-  return buffer;
-  });
-define("templates", function(){});
+// Define o template do Searcher
+var searcherTemplate = [
+	'<div class="row">',
+	'	<div class="col-md-2" style="margin-right:-15px;">',
+	'		<select class="form-control input-sm search-attrs"></select>',
+	'	</div>',
+	'	<div class="col-md-4">',
+	'		<form class="form-search" action="">',
+	'			<div class="input-group input-group-sm">',
+	'				<input type="text" class="form-control search-param" placeholder="Digite sua busca">',
+	'				<span class="input-group-btn">',
+	'					<button type="submit" class="btn btn-primary btn-search"><i class="glyphicon glyphicon-search"></i></button>',
+	'				</span>',
+	'			</div>',
+	'		</form>',
+	'	</div>',
+	'</div>'
+].join('');
 
-define('views/searcher',['require','exports','module','marionette'],function(require, exports, module){
+// Retorna uma Backbone View
+module.exports = Backbone.View.extend({
+	template: searcherTemplate,
 
-	var Marionette = require('marionette');
-
-	require(['../templates']);
-
-	module.exports = Marionette.ItemView.extend({
-		template: 'searcher/searcher.tpl',
-
-		events: {
-			'submit .form-search'  : 'doSearch',
-			'keyup .search-param'  : 'resetCollection',
-			'change .search-attrs' : function() { this.$('.search-param').focus(); }
-		},
-
-		initialize: function(options) {
-			this.options = options;
-			this.model = new Backbone.Model({});
-
-			this.setSearchAttrs();
-			this.render();
-
-			if(this.options.logTemplate) {
-				this.logTemplate();
-			}
-		},
-
-		logTemplate: function() {
-			var code = this.el.innerHTML;
-			code = code.replace(/\n\n/g, '\n');
-			console.log('#################### TEMPLATE DO SEARCHER ####################\n');
-			console.log(code);
-		},
-
-		setSearchingText: function(reset) {
-			var searchingText = this.options.searchingText ? this.options.searchingText : 'Buscando...';
-
-			if(reset) {
-				this.$('.btn-search').html(this.prevState);
+	// Define os eventos dos elementos do Searcher.
+	events: {
+		'submit .form-search': 'doSearch',
+		'keyup .search-param'  : _.debounce(function(ev) {
+			if(ev.currentTarget.value !== '' && this.options.live) {
+				this.doSearch(ev);
 			} else {
-				this.prevState = this.$('.btn-search').html();
-				this.$('.btn-search').html(searchingText);
+				this.resetCollection(ev);
 			}
-		},
+		}, 700),
+		'change .search-attrs' : function() { this.$('.search-param').focus(); }
+	},
 
-		resetCollection: function(ev) {
-			ev.preventDefault();
+	// Chama a renderização da view e prepara a collection para permitir buscas.
+	initialize: function(options) {
+		this.options = options;
+		this.collection = this.options.collection;
+		this.prepareCollection();
+		this.render();
+		this.setSearcherAttrs();
+	},
 
-			var	queryObj = _.omit(this.collection.queryObj, 'filter_fields'),
-				that = this;
+	// Renderiza a view.
+	render: function() {
+		this.$el.html(this.template);
+	},
 
-			if(ev.currentTarget.value == '') {
-				this.setSearchingText();
-				setTimeout(function() {
-					that.collection.callFetch(queryObj).success(function() {
-						that.setSearchingText('reset');
-					});
-				}, 100);
-			}
-		},
+	// Prepara a collection para permitir buscas.
+	prepareCollection: function() {
+		var that = this;
 
-		doSearch: function(ev) {
-			ev.preventDefault();
-
-			var searchAttr = this.$('.search-attrs'),
-				searchParam = this.$('.search-param'),
-				query = {filter_fields: searchAttr.val() + '%' + searchParam.val()},
-				that = this;
-
-			this.setSearchingText();
-
-			setTimeout(function() {
-				if(searchParam != '') {
-					that.collection.callFetch(query).success(function() {
-						that.setSearchingText('reset');
-					});
-				}
-			}, 100);
-		},
-
-		setSearchAttrs: function() {
-			var searchAttrs = [];
-
-			_.each(this.options.searchAttrs, function(v, k) {
-				searchAttrs.push({attr: k, title: v});
-			});
-
-			this.model.set('searchAttrs', searchAttrs);
+		// Cria o atributo queryObj na collection caso não exista.
+		if(!this.collection.queryObj) {
+			this.collection.queryObj = {};
 		}
-	});
-});
-define('searcher',['require','exports','module','jquery','./views/searcher'],function(require, exports, module){
 
-	var $ = require('jquery'),
-		SearcherView = require('./views/searcher');
+		// Cria a função callFetch na collection caso não exista.
+		if(!this.collection.callFetch) {
+			this.collection.callFetch = function(data) {
 
-	$.fn.Searcher = function(options) {
-		options.el = this;
-		return new SearcherView(options);
-	};
+				if(data && data.itens_per_page) {
+					that.collection.queryObj = _.extend({page: 1}, data);
+				}
+
+				that.collection.queryObj = _.extend(that.collection.queryObj, data);
+
+				return that.collection.fetch({
+					data: that.collection.queryObj
+				});
+			};
+		}
+	},
+
+	// Define os atributos de busca.
+	setSearcherAttrs: function() {
+		var cmbSearchOptions = this.$('.search-attrs');
+
+		_.each(this.options.searchAttrs, function(sa) {
+			sa = sa.split(':');
+			cmbSearchOptions.append('<option value="' + sa[0] + '">Buscar por ' + sa[1] + '</option>');
+		});
+	},
+
+	// Define o texto a ser exibido no botão enquanto a busca é efetuada.
+	setSearchingText: function(reset) {
+		var searchingText = this.options.searchingText ? this.options.searchingText : 'Buscando...';
+
+		if(reset) {
+			this.$('.btn-search').html(this.prevState);
+		} else {
+			this.prevState = this.$('.btn-search').html();
+			this.$('.btn-search').html(searchingText);
+		}
+	},
+
+	// Realiza a busca de acordo com os parâmetros escolhidos.
+	doSearch: function(ev) {
+		ev.preventDefault();
+
+		var searchAttr = this.$('.search-attrs').val(),
+			searchParam = this.$('.search-param').val(),
+			query = {filter_fields: searchAttr + '%' + searchParam},
+			that = this;
+
+		if(searchParam !== '') {
+			this.setSearchingText();
+			that.collection.callFetch(query).success(function() {
+				setTimeout(function() {
+					that.setSearchingText('reset');
+				}, 500);
+			});
+		}
+	},
+
+	// Retorna a collection a seu estado inicial quando os parâmetros de busca são limpados.
+	resetCollection: function(ev) {
+		ev.preventDefault();
+
+		var queryObj = {
+			itens_per_page: this.collection.itens_per_page ? this.collection.itens_per_page : 10,
+			page: 1
+		},
+		that = this;
+
+		if(ev.currentTarget.value === '') {
+			this.setSearchingText();
+			that.collection.fetch({
+				async: false,
+				data: queryObj
+			}).success(function() {
+				setTimeout(function() {
+					that.setSearchingText('reset');
+				}, 500);
+			});
+		}
+	}
 });
+},{}]},{},[1])
+(1)
+});;

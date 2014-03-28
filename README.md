@@ -1,4 +1,2 @@
-SEARCHER
-========
-
-> Módulo front-end de busca de dados.
+# SEARCHER
+> Módulo para busca de registros.

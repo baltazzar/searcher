@@ -7,10 +7,10 @@ Backbone.$ = $;
 // Define o template do Searcher
 var searcherTemplate = [
 	'<div class="row">',
-	'	<div class="col-md-2" style="margin-right:-15px;">',
+	'	<div class="col-md-4" style="padding-right:0;">',
 	'		<select class="form-control input-sm search-attrs"></select>',
 	'	</div>',
-	'	<div class="col-md-4">',
+	'	<div class="col-md-8">',
 	'		<form class="form-search" action="">',
 	'			<div class="input-group input-group-sm">',
 	'				<input type="text" class="form-control search-param" placeholder="Digite sua busca">',

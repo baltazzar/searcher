@@ -1,6 +1,6 @@
 {
 	"name": "searcher",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Módulo para busca de registros.",
 	"private": true,
 	"devDependencies": {
@@ -13,9 +13,10 @@
 		"jit-grunt"             : "~0.3.2"
 	},
 	"volo": {
-		"url": "https://raw.github.com/baltazzar/searcher/{version}/dist/searcher.js"
-	},
-	"scripts": {
-		"preinstall": "npm install -g grunt-cli"
+		"dependencies": {
+			"jquery"     : "github:components/jquery/1.11.0",
+			"underscore" : "github:jashkenas/underscore/1.6.0",
+			"backbone"   : "github:jashkenas/backbone/1.1.2"
+		}
 	}
 }

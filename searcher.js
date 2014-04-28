@@ -1,6 +1,6 @@
 /**
  * Baltazzar Searcher
- * Versão: 0.2.0
+ * Versão: 0.2.1
  * Módulo para busca de registros.
  * Autor: BaltazZar Team
  */

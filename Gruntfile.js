@@ -43,13 +43,13 @@ module.exports = function (grunt) {
 			files: ['src/**/*.js', '!src/libs/**/*.js']
 		},
 		watch: {
-			files: {
-				files: ['test/**/*', 'dist/**/*'],
+			test: {
+				files: ['test/**/*'],
 				options: {
 					livereload: '<%= livereloadPort %>'
 				}
 			},
-			dist: {
+			src: {
 				files: ['src/**/*.js', '!src/libs/**/*.js'],
 				tasks: ['browserify:dev']
 			}
@@ -57,7 +57,7 @@ module.exports = function (grunt) {
 		browserify: {
 			dev: {
 				src: ['src/<%= pkg.name %>.js'],
-				dest: 'dist/<%= pkg.name %>.js',
+				dest: '<%= pkg.name %>.js',
 				options: {
 					alias: ['src/libs/jquery.js:jquery', 'src/libs/underscore.js:underscore', 'src/libs/backbone.js:backbone'],
 					bundleOptions: {
@@ -67,7 +67,7 @@ module.exports = function (grunt) {
 			},
 			dist: {
 				src: ['src/<%= pkg.name %>.js'],
-				dest: 'dist/<%= pkg.name %>.js',
+				dest: '<%= pkg.name %>.js',
 				options: {
 					external: ['jquery', 'underscore', 'backbone'],
 					bundleOptions: {
@@ -83,8 +83,8 @@ module.exports = function (grunt) {
 	grunt.registerTask('build', ['docco', 'jshint', 'browserify:dist', 'banner']);
 	grunt.registerTask('banner', function() {
 		var banner = grunt.config.get('banner'),
-			fileContent = grunt.file.read('dist/searcher.js');
+			fileContent = grunt.file.read('searcher.js');
 
-		grunt.file.write('dist/searcher.js', banner + fileContent);
+		grunt.file.write('searcher.js', banner + fileContent);
 	});
 };

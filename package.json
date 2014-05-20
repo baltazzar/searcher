@@ -1,6 +1,6 @@
 {
 	"name": "searcher",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "Módulo para busca de registros.",
 	"private": true,
 	"devDependencies": {

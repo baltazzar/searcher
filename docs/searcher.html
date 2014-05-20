@@ -309,10 +309,7 @@ Backbone.$ = $;</pre></div></div>
 
 		<span class="hljs-keyword">if</span>(ev.currentTarget.value === <span class="hljs-string">''</span>) {
 			<span class="hljs-keyword">this</span>.setSearchingText();
-			that.collection.fetch({
-				async: <span class="hljs-literal">false</span>,
-				data: queryObj
-			}).success(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
+			<span class="hljs-keyword">this</span>.collection.callFetch(queryObj).success(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
 				setTimeout(<span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span> {</span>
 					that.setSearchingText(<span class="hljs-string">'reset'</span>);
 				}, <span class="hljs-number">500</span>);

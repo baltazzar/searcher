@@ -133,10 +133,7 @@ module.exports = Backbone.View.extend({
 
 		if(ev.currentTarget.value === '') {
 			this.setSearchingText();
-			that.collection.fetch({
-				async: false,
-				data: queryObj
-			}).success(function() {
+			this.collection.callFetch(queryObj).success(function() {
 				setTimeout(function() {
 					that.setSearchingText('reset');
 				}, 500);
